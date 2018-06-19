@@ -3,11 +3,10 @@ function initMap(){
     
     var mybaseTileLayer = baseLayer();
     myMap = L.map('map', {
-        center: [37.0902, -95.7129],
-        zoom: 4,
+        center: [13.5994, 18.6731],
+        zoom: 2,
         layers: [mybaseTileLayer]
     });
-    //myMap.fitWorld();
     return myMap;   
 }
 
@@ -56,15 +55,16 @@ function createMarkers(wineData, regData){
                         weight:1,
                         opacity: 1,
                         fillOpacity: 0.5,
-                        radius: wineData[0].points[i]*800
+                        radius: wineData[0].points[i]*1000
                     };
                 }//end of IF loop checking wineData.region with regionData 
                 
             } //end of IF loop verifying coords exist      
     }//end of regionData FOR loop
         console.log(wineryLocation);
+        var pop_message = ("<h5> Name: "+wineData[0].title[i] + "</h5> <br> <h5> Rating : " + wineData[0].points[i] + "</h5> <br> <h5> Winery : " + wineData[0].winery[i] + "</h5>")
     // for each winery location, create a marker and bind a pop with properties
-        var wineryMarker = L.circle([wineryLocation[0], wineryLocation[1]], markerOptions).bindPopup("<h5> Name: "+wineData[0].title[i] + "</h5> <br> <h5> Rating : " + wineData[0].points[i] + "</h5> <br> <h5> Winery : " + wineData[0].winery[i] + "</h5>");
+        var wineryMarker = L.circle([wineryLocation[0], wineryLocation[1]], markerOptions).bindPopup(pop_message);
         //add marker to wlayer
         wineryMarker.addTo(wlayer);
         wMarkers.push(wineryMarker);

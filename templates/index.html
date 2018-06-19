@@ -180,6 +180,14 @@
                    })
                })
             }
+            
+                 function getMapData1(variety, country, callback){
+                Plotly.d3.json(`/mapWine/${variety}/${country}`, function(error, wineData){
+                    Plotly.d3.json('/coords', function(error, coordData){
+                        callback(wineData, coordData);
+                    })
+                })
+            }
 			
 			function buildCharts(varietyData) {
 				
@@ -272,23 +280,47 @@
                 Plotly.relayout(PIE,pieLayout);
             }
 			
+            /*
 			//function on variety Option changed
             function varietyOptionsChanged(newVariety){
-               // coutrySel = getCountry();
+               //coutrySel = getCountry();
                 getData(newVariety, updateCharts);
 				getDataPie(newVariety, pieUpdateCharts);
 				getMapData(newVariety, updateMarkers);
             }
-        /*   
+        */
+            
+            //function on variety Option changed
+            function varietyOptionsChanged(newVariety){
+                var countrySel = getCountry();
+                if (countrySel == "--Select Country--"){
+                    getMapData(newVariety, updateMarkers);
+                }
+                else{
+                    getMapData1(newVariety, countrySel, updateMarkers);
+                }
+                getData(newVariety, updateCharts);
+				getDataPie(newVariety, pieUpdateCharts);
+                    
+                }
+            
             //function on Country option changed
             function regionOptionsChanged(newCountry){
-                varietySel = getVariety();
-                getData(varietySel, newCountry, updateCharts);
+                var varietySel = getVariety();
+                if (newCountry == "--Select Country--"){
+                    newCountry = "";
+                    getMapData(varietySel, updateMarkers);
+                }
+                else {
+                    getMapData1(varietySel, newCountry, updateMarkers);
+                }
+                //getMapData1(varietySel, newCountry, updateMarkers);
             }
             //grabs the current country selection
             function getCountry(){
                 var e = document.getElementById('countryDataset');
                 countrySelection = e.options[e.selectedIndex].text;
+                console.log(countrySelection);
                 return countrySelection;
             }
             
@@ -296,11 +328,9 @@
             function getVariety(){
                 var e = document.getElementById('varietyDataset');
                 varietySelection = e.options[e.selectedIndex].text;
-                console.log(varietySelection);
+                //console.log(varietySelection);
                 return varietySelection;
             }
-			
-			*/
 			
             function updateCharts(varietyData) {
 
