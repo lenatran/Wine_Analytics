@@ -45,6 +45,10 @@
                 </div>
 				<div class="col-md-4">
                     <img src="../static/wine_and_grapes.jpg" class="img-fluid img-thumbnail" alt="Wine and grapes">
+                    <br>
+                    <br>
+                    <p class="quote">“Wine is one of the most civilized things in the world and one of the most natural things of the world that has been brought to the greatest perfection, and it offers a greater range for enjoyment and appreciation than, possibly, any other purely sensory thing.”</p>
+                    <p class="quote_attribute">-Ernest Hemingway</p>
 				</div>
             </div>
 			<div class="row">
@@ -70,7 +74,7 @@
 			</div>
         </div>
         <div class="footer">
-            <p>UCBerckly Data Analytics Project 2</p>
+            <p>UCBerckly Data Analytics Bootcamp</p>
             <p>Project 2</p>
         </div>
         <script>
@@ -192,6 +196,8 @@
 			function pieBuildCharts(countryCount) {
 
                 var wineThemeColors = ['rgb(86, 36, 42)', 'rgb(100, 41, 48)', 'rgb(128, 53, 62)', 'rgb(156, 64, 75)', 'rgb(170, 70, 82)', 'rgb(182, 77, 90)', 'rgb(193, 105, 116)', 'rgb(205, 133, 141)', 'rgb(222, 175, 180)', 'rgb(233, 202, 206)'];
+                
+                var varietyName = countryCount[0]['variety'];
 
 
                 var trace1 = {
@@ -209,7 +215,7 @@
                 var pieData = [trace1];
 
                 var pieLayout = {
-                    title: "Top 10 Countries",
+                    title: `Top Countries Producing ${varietyName}`,
                     titlefont: {
                         family: 'fantasy',
                         size: 26
@@ -226,6 +232,7 @@
 
             function pieUpdateCharts(countryCount) {
                 var PIE = document.getElementById("pie");
+                var varietyName = countryCount[0]['variety'];
 
                 var pieUpdate = {
                     values: [countryCount[0]['country_count'].slice(0, 10)],
@@ -233,7 +240,13 @@
                     hovermode: "closest",
                     type: "pie"
                 };
+                
+                 var pieLayout = {
+                    title: `Top Countries Producing ${varietyName}`,
+                }
+                
                 Plotly.restyle(PIE, pieUpdate);
+                Plotly.relayout(PIE,pieLayout);
             }
 			
 			//function on variety Option changed
