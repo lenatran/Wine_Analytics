@@ -153,6 +153,7 @@ def country_count(variety):
         return jsonify(f"Error: Variety: {variety} Not Found!"), 400
 
     data = [{
+        "variety": variety,
         "country": country_count["country"].values.tolist(),
         "country_count": country_count["count"].values.tolist(),
     }]
