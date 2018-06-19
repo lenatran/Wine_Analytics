@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Wine not</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../static/style.css">
+		<!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-12 jumbotron text-left title_box">
+                    <h1 class="titleFont" style="color:#800000;">Wine not?</h1>
+                </div>
+            </div>
+            <div class="row">
+                <h1 class="title">Welcome to the wonderful world of wine</h1>
+                <h4 class="site-intro">Explore some of the best wines in the world through our interactive dashboard.</h4>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="well">
+                        <h4 style="color: white;">Select Wine Variety:</h4>
+                        <select id="varietyDataset" onchange="varietyOptionsChanged(this.value)"></select>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                    <div class="well">
+                        <h4 style="color: white;">Select Geographic Region</h4>
+                        <select id="countryDataset" onchange="regionOptionsChanged(this.value)"></select>
+                    </div>
+                </div>
+            </div>
+		</div>
+		<div class="container">
+            <div class="row">
+                <div class = "col-md-8">
+                    <div id="pie"></div>
+                </div>
+				<div class="col-md-4">
+                    <img src="../static/wine_and_grapes.jpg" class="img-fluid img-thumbnail" alt="Wine and grapes">
+				</div>
+            </div>
+			<div class="row">
+                <div class="col-md-12">
+                    <div id="bubble">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+					<div id="map"  style="height:400px;width:1000px"> </div>
+            </div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Top 10 Wine Variety</h3>
+                        </div>
+                        <div id="metadata" class="panel-body"></div>
+                    </div>
+				</div>
+			</div>
+        </div>
+        <div class="footer">
+            <p>UCBerckly Data Analytics Project 2</p>
+            <p>Project 2</p>
+        </div>
+        <script>
+		// Function that gets the selection options from the /variety and /country routes
+           
+			function getOptions(){
+               // reference to the variety dropdown select tag
+				var varietySelector = document.getElementById('varietyDataset');
+
+               // read in the data to populate the variety dropdown menue
+				Plotly.d3.json('/variety', function(error, sampleNames){
+					for (var i=0; i < sampleNames.length; i++) {
+                       var currentOption = document.createElement('option');
+                       currentOption.text = sampleNames[i];
+                       currentOption.value = sampleNames[i];
+                       varietySelector.appendChild(currentOption);
+					}
+					// sets the default wine variety to be the first option
+                   
+                    getInitData(sampleNames[0], buildCharts);
+					getDataPie(sampleNames[0], pieBuildCharts);
+					var variety1=sampleNames[0];
+                    getMapData(variety1, addMarkers);
+                });
+				// reference to the country dropdown select tag
+                var countrySelector = document.getElementById('countryDataset');
+
+                // read in the data to populate the country dropdown menue
+                Plotly.d3.json('/country', function(error, sampleNames){
+                    for (var i=0; i <= sampleNames.length; i++) {
+                        var currentOption = document.createElement('option');
+                        if(i==0){
+                            currentOption.text = "--Select Country--";
+                            currentOption.value = " ";
+                            countrySelector.appendChild(currentOption);
+                        }
+                        else {
+                           currentOption.text = sampleNames[i-1];
+                        currentOption.value = sampleNames[i-1];
+                        countrySelector.appendChild(currentOption); 
+                        }
+                        
+                    }
+                });   
+            }
+			
+			function getInitData(variety, callback) {
+                Plotly.d3.json(`/wine/${variety}`, function(error, varietyData) {
+					console.log(varietyData);
+					callback(varietyData);
+                })
+
+                Plotly.d3.json(`/varieties/${variety}`, function(error, metaData) {
+                    updateMetaData(metaData);
+                }) 
+            }
+			
+			// pie data
+            function getDataPie(variety, callback) {
+                Plotly.d3.json(`/country_count/${variety}`, function(error, countryCount) {
+                    if (error) return console.warn(error);
+                    callback(countryCount);
+                    })
+            }
+			
+			function getData(variety, country, callback) {
+                Plotly.d3.json(`/wine/${variety}/${country}`, function(error, varietyData) {
+					console.log(varietyData);
+					callback(varietyData);
+                })
+
+                Plotly.d3.json(`/varieties/${variety}/${country}`, function(error, metaData) {
+                    updateMetaData(metaData);
+                }) 
+            }
+			
+			function getMapData(variety, callback){
+                Plotly.d3.json(`/mapWine/${variety}`, function(error, wineData){
+                   Plotly.d3.json('/coords', function(error, coordData){
+                       if(error)return console.warn(error);
+                       callback(wineData,coordData);
+                   })
+               })
+            }
+			
+			function buildCharts(varietyData) {
+				
+				// Loop through sample data and find the OTU taxonomic name
+                var labels = varietyData[0]["title"].map(function(item) {
+                    return item
+                 });
+				
+				// Build Bubble Chart
+                var trace1 = {
+                    x: varietyData[0]['price'],
+                    y: varietyData[0]['points'],
+                    text: labels,
+                    mode: 'markers',
+                    marker: {
+                        color: varietyData[0]["price"],
+                        colorscale: "Reds"
+                    }
+                };
+
+                var data = [trace1];
+
+                var layout = {
+                    margin: {t: 0},
+                    hovermode: 'closest',
+                    xaxis: {title: "Price"}
+                };
+
+                var BUBBLE = document.getElementById('bubble');
+
+                Plotly.plot(BUBBLE, data, layout);
+
+            }
+			
+			function pieBuildCharts(countryCount) {
+
+                var wineThemeColors = ['rgb(86, 36, 42)', 'rgb(100, 41, 48)', 'rgb(128, 53, 62)', 'rgb(156, 64, 75)', 'rgb(170, 70, 82)', 'rgb(182, 77, 90)', 'rgb(193, 105, 116)', 'rgb(205, 133, 141)', 'rgb(222, 175, 180)', 'rgb(233, 202, 206)'];
+
+
+                var trace1 = {
+                    labels: countryCount[0]['country'].slice(0, 10),
+                    values: countryCount[0]["country_count"].slice(0, 10),
+                    hovermode: "closest",
+                    marker: {
+                        colors: wineThemeColors
+                    },
+                    textinfo: "none",
+                    type: 'pie'
+                };
+
+
+                var pieData = [trace1];
+
+                var pieLayout = {
+                    title: "Top 10 Countries",
+                    titlefont: {
+                        family: 'fantasy',
+                        size: 26
+                    }
+                }
+
+                var PIE = document.getElementById('pie');
+
+
+                Plotly.plot(PIE, pieData, pieLayout);
+            };
+
+            
+
+            function pieUpdateCharts(countryCount) {
+                var PIE = document.getElementById("pie");
+
+                var pieUpdate = {
+                    values: [countryCount[0]['country_count'].slice(0, 10)],
+                    labels: [countryCount[0]['country'].slice(0, 10)],
+                    hovermode: "closest",
+                    type: "pie"
+                };
+                Plotly.restyle(PIE, pieUpdate);
+            }
+			
+			//function on variety Option changed
+            function varietyOptionsChanged(newVariety){
+               // coutrySel = getCountry();
+                getData(newVariety, updateCharts);
+				getDataPie(newVariety, pieUpdateCharts);
+				getMapData(newVariety, updateMarkers);
+            }
+        /*   
+            //function on Country option changed
+            function regionOptionsChanged(newCountry){
+                varietySel = getVariety();
+                getData(varietySel, newCountry, updateCharts);
+            }
+            //grabs the current country selection
+            function getCountry(){
+                var e = document.getElementById('countryDataset');
+                countrySelection = e.options[e.selectedIndex].text;
+                return countrySelection;
+            }
+            
+            //grabs current variety selection
+            function getVariety(){
+                var e = document.getElementById('varietyDataset');
+                varietySelection = e.options[e.selectedIndex].text;
+                console.log(varietySelection);
+                return varietySelection;
+            }
+			
+			*/
+			
+            function updateCharts(varietyData) {
+
+                var points = varietyData[0]["points"];
+                var price = varietyData[0]["price"];
+                var BUBBLE = document.getElementById('bubble');
+				
+				// Return the OTU Description for each otuID in the dataset
+                var labels = varietyData[0]["title"].map(function(item) {
+                    return item
+                });
+				
+				//Update the bubble chart with the new data
+                Plotly.restyle(BUBBLE, 'x', [price]);
+                Plotly.restyle(BUBBLE, 'y', [points]);
+				Plotly.restyle(BUBBLE, 'text', [labels]);
+               // Plotly.restyle(BUBBLE, 'marker.size', [sampleValues]);
+               // Plotly.restyle(BUBBLE, 'marker.color', [otuIDs]);
+				
+				//Update the pie chart with the new data
+				// Use slice to select only the top 10 OTUs for the pie chart
+            }
+			
+			// build the Metadata function and updateMetaData function
+            
+            function metaPanel(data) {
+                var PANEL = document.getElementById("metadata");
+                for(var key in data) {
+                    panelTag
+                }
+            }
+
+            function updateMetaData(data) {
+			
+				// Reference to Panel element for sample metadata
+                var PANEL = document.getElementById("metadata");
+				
+				// Clear any existing metadata
+                PANEL.innerHTML = "";
+				
+				// Loop through all of the keys in the json response and 
+				// create new metadata tags
+                for (var i=0; i<data.length; i++) {
+					for(var key in data[i]) {
+						panelTag = document.createElement("h6");
+						panelText = document.createTextNode(`${key}: ${data[i][key]}`);
+						panelTag.append(panelText);
+						PANEL.appendChild(panelTag);  
+					}
+					PANEL.append(document.createElement("hr"))
+				}
+			}
+			
+            function init() {
+                getOptions();
+            }
+
+            // initializes our functions
+            init();
+			
+        </script>
+		
+		<!-- D3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+
+    <!-- Leaflet JavaScript-->
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+        
+         <!-- Our JS -->
+    <script type="text/javascript" src="../static/logic-new.js">
+    </script>
+    </body>
+</html>

@@ -1,0 +1,62 @@
+
+body {
+    background-color: #F5F5DC;
+}
+.title_box {
+    background-image: url("vineyard3.jpg");
+}
+.well {
+    background-color: #800000;
+}
+.container {
+    background-color: #F5F5DC;
+}
+
+.titleFont {
+    font-family: fantasy;
+}
+.site-intro {
+    font-family: fantasy;
+}
+.secondaryTitleFont {
+    font-family: fantasy;
+    font-weight: bolder;
+}
+.title {
+    font-family: fantasy;
+}
+
+h4 {
+    font-family: fantasy;
+}
+
+p {
+    font-family: fantasy;
+}
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #5F9EA0;
+    color: white;
+    text-align: center;
+}
+
+.quote_attribute {
+    text-align: right;
+}
+
+.wine_image {
+    background-image: url(wine_and_grapes.jpg);
+}
+
+.img-thumbnail {
+    background: #5F9EA0;
+}
+
+#map,
+body,
+html{
+   height: 100%;
+}
