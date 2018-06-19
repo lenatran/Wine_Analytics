@@ -51,7 +51,7 @@ function createMarkers(wineData, regData){
                     var wineryLocation =JSON.parse(coords[j]);
                     // set the markerOptions
                     var markerOptions = {
-                        fillColor: "orange",
+                        fillColor: "#4B0082",
                         color: "white",
                         weight:1,
                         opacity: 1,
