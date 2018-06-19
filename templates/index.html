@@ -42,6 +42,7 @@
             <div class="row">
                 <div class = "col-md-8">
                     <div id="pie"></div>
+                    <br>
                 </div>
 				<div class="col-md-4">
                     <img src="../static/wine_and_grapes.jpg" class="img-fluid img-thumbnail" alt="Wine and grapes">
@@ -52,15 +53,31 @@
 				</div>
             </div>
 			<div class="row">
-                <div class="col-md-12">
+                <div class="col-md-9">
                     <div id="bubble">
                     </div>
+                    <br>
+					<div id="map"  style="height:400px;width:1000px"> </div>
+                    
+                </div>
+                <div class="col-md-3">
+					<div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Top 10 Wine Variety</h3>
+                        </div>
+                        <div id="metadata" class="panel-body"></div>
+                    </div>
+				</div>
+            </div>
+<!--
+            <div class="row">
+                <div class="col-md-9">
+					<div id="map"  style="height:400px;width:1000px"> </div>
                 </div>
             </div>
-            <div class="row">
-					<div id="map"  style="height:400px;width:1000px"> </div>
-            </div>
+-->
 		</div>
+<!--
 		<div class="container">
 			<div class="row">
 				<div class="col-md-3">
@@ -73,6 +90,7 @@
 				</div>
 			</div>
         </div>
+-->
         <div class="footer">
             <p>UCBerckly Data Analytics Bootcamp</p>
             <p>Project 2</p>
@@ -184,7 +202,8 @@
                 var layout = {
                     margin: {t: 0},
                     hovermode: 'closest',
-                    xaxis: {title: "Price"}
+                    xaxis: {title: "Price"},
+                    yaxis: {title: "Rating"}
                 };
 
                 var BUBBLE = document.getElementById('bubble');
