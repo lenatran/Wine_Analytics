@@ -32,7 +32,7 @@
                 <div class="col-md-2"></div>
                 <div class="col-md-5">
                     <div class="well">
-                        <h4 style="color: white;">Select Geographic Region</h4>
+                        <h4 style="color: white;">Select Country (for map only)</h4>
                         <select id="countryDataset" onchange="regionOptionsChanged(this.value)"></select>
                     </div>
                 </div>
@@ -54,10 +54,15 @@
             </div>
 			<div class="row">
                 <div class="col-md-9">
+                    <h4 class="bubbleTitle">Price vs. Rating for Selected Wine Variety</h4>
                     <div id="bubble">
                     </div>
                     <br>
 					<div id="map"  style="height:400px;width:850px"> </div>
+                    <p>Sources:</p>
+                    <p>https://www.kaggle.com/zynicide/wine-reviews/data</p>
+                    <p>https://github.com/zackthoutt/wine-deep-learning</p>
+                    
                     
                 </div>
                 <div class="col-md-3">
@@ -95,7 +100,7 @@
         </div>
 -->
         <div class="footer">
-            <p>UCBerckly Data Analytics Bootcamp</p>
+            <p>UC Berkeley Data Analytics Bootcamp</p>
             <p>Project 2</p>
         </div>
         <script>
