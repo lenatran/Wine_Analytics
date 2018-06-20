@@ -161,7 +161,7 @@
                     })
             }
 			
-			function getData(variety, country, callback) {
+			/*function getData(variety, country, callback) {
                 Plotly.d3.json(`/wine/${variety}/${country}`, function(error, varietyData) {
 					console.log(varietyData);
 					callback(varietyData);
@@ -170,7 +170,7 @@
                 Plotly.d3.json(`/varieties/${variety}/${country}`, function(error, metaData) {
                     updateMetaData(metaData);
                 }) 
-            }
+            }*/
 			
 			function getMapData(variety, callback){
                 Plotly.d3.json(`/mapWine/${variety}`, function(error, wineData){
@@ -292,17 +292,21 @@
             
             //function on variety Option changed
             function varietyOptionsChanged(newVariety){
-                var countrySel = getCountry();
+                getInitData(newVariety, updateCharts);
+				getDataPie(newVariety, pieUpdateCharts);
+                getMapC(newVariety);
+            }
+            
+            function getMapC(newVariety){
+              var countrySel = getCountry();
                 if (countrySel == "--Select Country--"){
                     getMapData(newVariety, updateMarkers);
                 }
                 else{
                     getMapData1(newVariety, countrySel, updateMarkers);
-                }
-                getData(newVariety, updateCharts);
-				getDataPie(newVariety, pieUpdateCharts);
-                    
-                }
+                }  
+            }
+                
             
             //function on Country option changed
             function regionOptionsChanged(newCountry){
